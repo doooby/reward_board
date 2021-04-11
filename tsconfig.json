@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./tmp/build/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "esnext",
+    "jsx": "react",
+    "lib": [ "dom", "esnext" ],
+    "esModuleInterop": true,
+    "baseUrl": ".",
+  }
+}

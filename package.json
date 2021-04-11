@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "serve": "node server.js",
+    "pack": "node_modules/.bin/webpack"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "hbs": "^4.1.1"
+  }
+}
