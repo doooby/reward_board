@@ -30,6 +30,6 @@ config.plugin('MiniCssExtractPlugin')
 module.exports = config;
 
 config.entry('app').add(`./src/index.ts`);
-config.output.path(path.resolve(__dirname, 'tmp'));
+config.output.path(path.resolve(__dirname, 'tmp/build'));
 
 module.exports = config.toConfig();
