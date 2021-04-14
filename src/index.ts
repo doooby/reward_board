@@ -1,4 +1,4 @@
-import React from 'react;'
+import React from 'react';
 import ReactDom from 'react-dom';
 import Root, { Props as RootProps } from './Root';
 
@@ -13,29 +13,33 @@ interface Config {
     const shadow = config.element.attachShadow({ mode: 'closed' });
 
     const style = document.createElement('style');
-    shadow.appendChild(style);
     style.textContent = `
         .wrapper {
             width: 100%;
             height: 100%;
             visibility: hidden;
         }
-        @import url("${config.stylesURL}");
     `;
+
+    const externalStyles = document.createElement('link');
+    externalStyles.rel = 'stylesheet';
+    externalStyles.href = config.stylesURL;
 
     const wrapper = document.createElement('div');
     wrapper.classList.add('wrapper');
 
-    const rootProps: RootProps = {
-        boardLayout: {
-            layerDepth: 3,
-            layersCount: 4;
-            spikeDepth: 4;
-        }
-    };
+    shadow.appendChild(style);
+    shadow.appendChild(externalStyles);
+    shadow.appendChild(wrapper);
 
     ReactDom.render(
-        React.createElement(Root, rootProps),
+        React.createElement(Root, {
+            boardState: {
+                layerDepth: 3,
+                layersCount: 4,
+                spikeDepth: 4,
+            }
+        }),
         wrapper
     );
 };

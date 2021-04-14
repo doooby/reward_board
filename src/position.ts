@@ -12,15 +12,9 @@ interface Model {
     };
 }
 
-interface Step {
-    a: Direction;
-    y: -1 | null | 1;
-    x: null | 1 | -1;
-}
-
-const RIMS_LEVELS = 4;
-const RIM_STEPS = 3;
-const RIM_LAS_LEVEL_STEPS = 8;
+export const RIMS_LEVELS = 4;
+export const RIM_STEPS = 3;
+export const RIM_LAS_LEVEL_STEPS = 8;
 
 export class Position {
     model: Model = {
