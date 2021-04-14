@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import Root, { Props as RootProps } from './Root';
+import Board from './components/Board';
 
 import '../styles.scss';
 
@@ -33,11 +33,8 @@ interface Config {
     shadow.appendChild(wrapper);
 
     ReactDom.render(
-        React.createElement(Root, {
+        React.createElement(Board, {
             boardState: {
-                layerDepth: 3,
-                layersCount: 4,
-                spikeDepth: 4,
             }
         }),
         wrapper

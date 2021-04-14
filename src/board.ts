@@ -1,4 +1,6 @@
-import { RIM_LAS_LEVEL_STEPS, RIM_STEPS, RIMS_LEVELS } from './position';
+export interface BoardState {
+
+}
 
 interface Tile {
     x: number;
@@ -16,6 +18,14 @@ type SpecialTile =
         { home: true }
     );
 
+export const RESOLUTION = 200;
+export const RIMS_LEVELS = 4;
+export const RIM_STEPS = 3;
+export const RIM_LAS_LEVEL_STEPS = 8;
+
+function cent (relSize: number): number {
+    return (relSize / 100) * RESOLUTION;
+}
 
 export const mapTiles: Tile[] = [
     { x: 0 , y: 0, key: '0:0' },
@@ -52,5 +62,20 @@ export const specialTiles: SpecialTile[] = [
     { x: 0, y: 0, home: true },
     // { x: 0, y: 0, type: 'some-event-1' },
 ];
+
+export function paintBoard (
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    board: BoardState,
+) {
+    const { width, height } = canvas;
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.fillRect(cent(10), cent(10), cent(80), cent(40));
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'green';
+    ctx.strokeRect(cent(20), cent(60), cent(20), cent(20));
+}
 
 

@@ -1,13 +1,8 @@
 import React from 'react';
-
-const RESOLUTION = 200;
-
-interface BoardState {
-
-}
+import * as board from '../board';
 
 const Board = class extends React.PureComponent<{
-    boardState: BoardState;
+    boardState: board.BoardState;
 }> {
 
     canvasRef = React.createRef<HTMLCanvasElement>();
@@ -18,8 +13,8 @@ const Board = class extends React.PureComponent<{
 
         return <canvas
             ref={this.canvasRef}
-            width={RESOLUTION}
-            height={RESOLUTION}
+            width={board.RESOLUTION}
+            height={board.RESOLUTION}
         />;
     }
 
@@ -31,10 +26,11 @@ const Board = class extends React.PureComponent<{
     paint () {
         const ctx = this.canvasCtx;
         if (ctx === null) return;
-
-        const { width, height } = this.canvasRef.current;
-        ctx.clearRect(0, 0, width, height);
-
+        board.paintBoard(
+            this.canvasRef.current,
+            this.canvasCtx,
+            this.props.boardState,
+        );
     }
 
 }

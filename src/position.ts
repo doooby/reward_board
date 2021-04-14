@@ -1,3 +1,5 @@
+import { RIM_LAS_LEVEL_STEPS, RIM_STEPS, RIMS_LEVELS } from './board';
+
 type Direction = "north" | "east" | "south" | "west";
 
 const CLOCK_WISE = 1;
@@ -11,10 +13,6 @@ interface Model {
         sidestep: number;
     };
 }
-
-export const RIMS_LEVELS = 4;
-export const RIM_STEPS = 3;
-export const RIM_LAS_LEVEL_STEPS = 8;
 
 export class Position {
     model: Model = {
