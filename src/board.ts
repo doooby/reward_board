@@ -18,16 +18,22 @@ type SpecialTile =
         { home: true }
     );
 
-export const RESOLUTION = 200;
+export const RESOLUTION = 1000;
 export const RIMS_LEVELS = 4;
 export const RIM_STEPS = 3;
 export const RIM_LAS_LEVEL_STEPS = 8;
+
+const STEP_SIZE = 2;
+const STEP_MARGIN = 0.2;
+const STEP_BORDER = 0.2;
+const STEP_WIDTH = STEP_SIZE + (2 * STEP_BORDER);
+const STEP_SLOT_WIDTH = STEP_SIZE + (2 * STEP_BORDER) + (2 * STEP_MARGIN);
 
 function cent (relSize: number): number {
     return (relSize / 100) * RESOLUTION;
 }
 
-export const mapTiles: Tile[] = [
+const mapTiles: Tile[] = [
     { x: 0 , y: 0, key: '0:0' },
 ];
 
@@ -44,7 +50,7 @@ for (let i = -mapHalfWide; i <= mapHalfWide; i += 1) {
 
 for (let rim = 0; rim < RIMS_LEVELS; rim += 1) {
     const rimHalfWide = ( rim * RIM_STEPS ) + RIM_STEPS;
-    for (let i = -rimHalfWide - 1; i < rimHalfWide; i += 1) {
+    for (let i = -rimHalfWide; i < rimHalfWide; i += 1) {
         if (i === 0) continue;
         addTile(i, -rimHalfWide); // north line
         addTile(rimHalfWide, i ); // east line
@@ -63,7 +69,7 @@ export const specialTiles: SpecialTile[] = [
     // { x: 0, y: 0, type: 'some-event-1' },
 ];
 
-export function paintBoard (
+export function renderInto (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     board: BoardState,
@@ -71,11 +77,18 @@ export function paintBoard (
     const { width, height } = canvas;
     ctx.clearRect(0, 0, width, height);
 
-    ctx.fillRect(cent(10), cent(10), cent(80), cent(40));
-
+    // render step tiles
     ctx.lineWidth = 2;
-    ctx.strokeStyle = 'green';
-    ctx.strokeRect(cent(20), cent(60), cent(20), cent(20));
+    ctx.strokeStyle = 'black';
+    for (let tile of mapTiles) {
+        paintStep(ctx, tile);
+    }
 }
 
-
+function paintStep (ctx: CanvasRenderingContext2D, tile: Tile) {
+    const centSlot = cent(STEP_SLOT_WIDTH);
+    const x = (RESOLUTION / 2) - (centSlot / 2) + (tile.x * centSlot);
+    const y = (RESOLUTION / 2) - (centSlot / 2) + (tile.y * centSlot);
+    ctx.setTransform(1, 0, 0, 1, x, y);
+    ctx.strokeRect(cent(STEP_MARGIN), cent(STEP_MARGIN), cent(STEP_WIDTH), cent(STEP_WIDTH));
+}

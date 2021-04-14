@@ -10,7 +10,6 @@ const Board = class extends React.PureComponent<{
 
     render () {
         if (this.canvasCtx) this.paint();
-
         return <canvas
             ref={this.canvasRef}
             width={board.RESOLUTION}
@@ -26,7 +25,7 @@ const Board = class extends React.PureComponent<{
     paint () {
         const ctx = this.canvasCtx;
         if (ctx === null) return;
-        board.paintBoard(
+        board.renderInto(
             this.canvasRef.current,
             this.canvasCtx,
             this.props.boardState,
