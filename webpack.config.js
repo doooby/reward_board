@@ -5,8 +5,11 @@ const Config = require('webpack-chain');
 
 const config = new Config();
 
-config.mode('development');
-config.devtool('eval-cheap-module-source-map');
+config.mode('production');
+// config.devtool('eval-cheap-module-source-map');
+
+// config.mode('development');
+// config.devtool('eval-cheap-module-source-map');
 
 config.resolve.extensions
     .add('.js')

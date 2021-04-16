@@ -9,7 +9,7 @@ const Board = class extends React.PureComponent<{
     canvasCtx: null | CanvasRenderingContext2D = null;
 
     render () {
-        if (this.canvasCtx) this.paint();
+        this.paint();
         return <canvas
             ref={this.canvasRef}
             width={board.RESOLUTION}
@@ -19,14 +19,13 @@ const Board = class extends React.PureComponent<{
 
     componentDidMount() {
         this.canvasCtx = this.canvasRef.current.getContext('2d');
+        board.setupCanvasContext(this.canvasCtx);
         this.paint();
     }
 
     paint () {
-        const ctx = this.canvasCtx;
-        if (ctx === null) return;
+        if (this.canvasCtx === null) return;
         board.renderInto(
-            this.canvasRef.current,
             this.canvasCtx,
             this.props.boardState,
         );
