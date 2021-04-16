@@ -9,7 +9,7 @@ interface Config {
     stylesURL: string;
 }
 
-(globalThis as any).LUKE_COSIK = (config: Config) => {
+(globalThis as any).D3O_RewardBoard = (config: Config) => {
     const shadow = config.element.attachShadow({ mode: 'closed' });
 
     const style = document.createElement('style');

@@ -1,0 +1,14 @@
+# HOW TO
+import `dist/app.js`
+and
+```
+    globalThis.D3O_RewardBoard({ ...options });
+```
+
+options:
+- to be written
+
+# DEVELOPMENT
+`` yarn install
+`` yarn webpack --watch
+`yarn demo:serve`# this runs on default: `http://localhost:3000`
