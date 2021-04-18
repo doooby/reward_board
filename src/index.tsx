@@ -36,6 +36,17 @@ import '../styles.scss';
             />,
             this.model.wrapperElement,
         );
+
+        const observer = new ResizeObserver(
+            (entries: ResizeObserverEntry[]) => {
+                try {
+                    const width = entries[0].contentRect.width;
+                    this.changeWidth(width);
+                }
+                finally {}
+            }
+        );
+        observer.observe(config.wrapperElement!);
     }
 
     rerenderAndDebug () {

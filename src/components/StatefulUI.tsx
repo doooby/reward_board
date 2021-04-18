@@ -8,6 +8,5 @@ export default function StatefulUI (props: {
 }) {
     const [model, setModel] = useState(props.defaultModel);
     props.registerModelSetter(setModel);
-
     return <Board model={model}/>;
 }

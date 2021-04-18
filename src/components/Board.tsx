@@ -11,6 +11,7 @@ export default class Board extends React.PureComponent<{
     canvasCtx: null | CanvasRenderingContext2D = null;
 
     render () {
+        const { model } = this.props;
         // if (this.canvasRef.current) {
         //     this.resetCanvas();
         // }
@@ -18,8 +19,8 @@ export default class Board extends React.PureComponent<{
         // this.paint();
         return <canvas
             ref={this.canvasRef}
-            width={board.RESOLUTION}
-            height={board.RESOLUTION}
+            width={model.viewWidth}
+            height={model.viewWidth}
         />;
     }
 
