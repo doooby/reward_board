@@ -5,24 +5,19 @@ type Direction = "north" | "east" | "south" | "west";
 const CLOCK_WISE = 1;
 const COUNTER_CLOCK_WISE = -1;
 
-interface Model {
-    direction: null | Direction;
-    rim: null | {
-        level: number;
-        step: number;
-        sidestep: number;
-    };
+type Rim = {
+    level: number;
+    step: number;
+    sidestep: number;
 }
 
 export class Position {
-    model: Model = {
-        direction: null,
-        rim: null,
-    };
+    direction: null | Direction = null;
+    rim: null | Rim = null;
 
-    static assertValidModel (model: Model) {
-        if (model.rim !== null) {
-            const { rim } = model;
+    static assertValid (position: Position) {
+        const { rim } = position;
+        if (rim !== null) {
             switch (true) {
                 case (rim.level < 1 || rim.level > RIMS_LEVELS):
                     throw new Error('en.Position.invalid.rim_level');
@@ -53,18 +48,19 @@ export class Position {
     }
 
     stepUp () {
-        const { level, step, sidestep } = this.model.rim;
+        if (!this.direction || !this.rim) throw new Error('invalid position');
+        const { level, step, sidestep } = this.rim;
 
         const rimSteps = level !== RIM_STEPS ? RIM_STEPS : RIM_LAS_LEVEL_STEPS;
         if (step > rimSteps) {
-            this.model.rim = {
+            this.rim = {
                 level: level + 1,
                 step: 0,
                 sidestep: 0,
             };
 
         } else {
-            this.model.rim = {
+            this.rim = {
                 level,
                 step: step + 1,
                 sidestep,
@@ -73,18 +69,19 @@ export class Position {
     }
 
     stepDown () {
-        const { level, step } = this.model.rim;
+        if (!this.direction || !this.rim) throw new Error('invalid position');
+        const { level, step } = this.rim;
 
         if (step === 0) {
-            if (level === 1) this.model.rim = null;
-            else this.model.rim = {
+            if (level === 1) this.rim = null;
+            else this.rim = {
                 level: level - 1,
                 step: 0,
                 sidestep: 0,
             };
 
         } else {
-            this.model.rim = {
+            this.rim = {
                 level,
                 step: step - 1,
                 sidestep: 0,
@@ -93,28 +90,30 @@ export class Position {
     }
 
     stepRight () {
-        const { direction } = this.model;
-        const { level, sidestep } = this.model.rim;
+        if (!this.direction || !this.rim) throw new Error('invalid position');
+        const { direction } = this;
+        const { level, sidestep } = this.rim;
         const lastStep = level * RIM_STEPS;
 
         if (sidestep >= lastStep) {
-            this.model.direction = rotateDirection(direction, CLOCK_WISE);
-            this.model.rim.sidestep = -sidestep + COUNTER_CLOCK_WISE;
+            this.direction = rotateDirection(direction, CLOCK_WISE);
+            this.rim.sidestep = -sidestep + COUNTER_CLOCK_WISE;
         } else {
-            this.model.rim.sidestep = sidestep + CLOCK_WISE;
+            this.rim.sidestep = sidestep + CLOCK_WISE;
         }
     }
 
     stepLeft () {
-        const { direction } = this.model;
-        const { level, sidestep } = this.model.rim;
+        if (!this.direction || !this.rim) throw new Error('invalid position');
+        const { direction } = this;
+        const { level, sidestep } = this.rim;
         const lastStep = level * RIM_STEPS;
 
         if (sidestep <= -lastStep) {
-            this.model.direction = rotateDirection(direction, COUNTER_CLOCK_WISE);
-            this.model.rim.sidestep = -sidestep + CLOCK_WISE;
+            this.direction = rotateDirection(direction, COUNTER_CLOCK_WISE);
+            this.rim.sidestep = -sidestep + CLOCK_WISE;
         } else {
-            this.model.rim.sidestep = sidestep + COUNTER_CLOCK_WISE;
+            this.rim.sidestep = sidestep + COUNTER_CLOCK_WISE;
         }
     }
 

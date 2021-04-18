@@ -9,5 +9,6 @@
     "lib": [ "dom", "esnext" ],
     "esModuleInterop": true,
     "baseUrl": ".",
+    "strict": true,
   }
 }

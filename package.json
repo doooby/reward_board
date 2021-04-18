@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "demo:serve": "node demo/server.js"
+    "demo:serve": "node demo/lib/server.js"
   },
   "dependencies": {
     "@types/react": "^17.0.3",

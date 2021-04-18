@@ -1,6 +1,4 @@
-export interface BoardState {
-
-}
+import { Model } from './model';
 
 interface Tile {
     x: number;
@@ -58,7 +56,7 @@ export function setupCanvasContext (
 
 export function renderInto (
     ctx: CanvasRenderingContext2D,
-    board: BoardState,
+    model: Model,
 ) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
