@@ -1,14 +1,13 @@
 export type Config = {
     element: HTMLElement;
     stylesURL: string;
-    viewWidthMax?: number;
 
     shadowRoot?: ShadowRoot;
     wrapperElement?: HTMLDivElement;
 }
 
 export type Model = {
-    viewWidth: number;
-    // viewWidthMax: number;
+    viewSize: number;
     wrapperElement: HTMLDivElement;
+    avatarPosition: { x: number, y: number };
 }

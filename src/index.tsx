@@ -16,9 +16,9 @@ import '../styles.scss';
         initializers.addWrapperElement(config);
 
         this.model = {
-            viewWidth: 0,
-            // viewWidthMax: Math.max(800, config.viewWidthMax || 0),
+            viewSize: 0,
             wrapperElement: config.wrapperElement!,
+            avatarPosition: { x: 0, y: 0 },
         }
 
         let setModel: (model: Model) => void;
@@ -49,18 +49,10 @@ import '../styles.scss';
         observer.observe(config.wrapperElement!);
     }
 
-    rerenderAndDebug () {
-        const orig_model = this.model;
-        this.updateModel({ ...this.model });
-        const next_model = this.model;
-        console.log(this.model);
-        console.log('model changed: ', orig_model === next_model);
-    }
-
     changeWidth (width: number) {
         this.updateModel({
             ...this.model,
-            viewWidth: width,
+            viewSize: width,
         });
     }
 };

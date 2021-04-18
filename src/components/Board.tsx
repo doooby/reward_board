@@ -4,7 +4,6 @@ import { Model } from '../model';
 
 export default class Board extends React.PureComponent<{
     model: Model;
-    // boardState: board.BoardState;
 }> {
 
     canvasRef = React.createRef<HTMLCanvasElement>();
@@ -12,45 +11,37 @@ export default class Board extends React.PureComponent<{
 
     render () {
         const { model } = this.props;
-        // if (this.canvasRef.current) {
-        //     this.resetCanvas();
-        // }
-        //
-        // this.paint();
+        if (this.canvasRef.current) {
+            this.resetCanvas();
+        }
+
+        this.paint();
         return <canvas
             ref={this.canvasRef}
-            width={model.viewWidth}
-            height={model.viewWidth}
+            width={model.viewSize}
+            height={model.viewSize}
         />;
     }
 
-    componentDidMount() {
-
-    }
-
     resetCanvas () {
-        // const canvas = this.canvasRef.current;
-        // if (!canvas) return;
-        //
-        // const { boardState } = this.props;
-        // const size = Math.max(
-        //     Math.floor(boardState.viewWidth),
-        //     Math.floor(boardState.viewWidthMax || 800),
-        // );
-        // canvas.width = size;
-        // canvas.height = size;
-        //
-        // this.canvasCtx = canvas.getContext('2d');
-        // board.setupCanvasContext(this.canvasCtx);
-        // this.paint();
+        const canvas = this.canvasRef.current;
+        if (!canvas) return;
+
+        const { model } = this.props;
+        canvas.width = model.viewSize;
+        canvas.height = model.viewSize;
+
+        this.canvasCtx = canvas.getContext('2d');
+        board.setupCanvasContext(this.canvasCtx!);
+        this.paint();
     }
 
     paint () {
-        // if (this.canvasCtx === null) return;
-        // board.renderInto(
-        //     this.canvasCtx,
-        //     this.props.boardState,
-        // );
+        if (this.canvasCtx === null) return;
+        board.renderInto(
+            this.canvasCtx,
+            this.props.model,
+        );
     }
 
 }

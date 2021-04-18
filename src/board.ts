@@ -6,36 +6,26 @@ interface Tile {
     key: string;
 }
 
-interface TileSizes {
+interface RelativeSizes {
+    view: number,
     slot: number,
     stepMargin: number,
-    stepWidth: number,
+    step: number,
     stepBorder: number,
+    avatar: number,
 }
 
-// type SpecialTile =
-//     {
-//         x: number;
-//         y: number;
-//     }
-//     &
-//     (
-//         { home: true }
-//     );
-
-export const RESOLUTION = 400;
 export const RIMS_LEVELS = 4;
 export const RIM_STEPS = 3;
 export const RIM_LAS_LEVEL_STEPS = 8;
 
-const STEP_SIZE = 2.2;
+const STEP_SIZE = 1.8;
 const STEP_MARGIN = 0;
-const STEP_BORDER = 0.5;
-const STEP_WIDTH = STEP_SIZE + (2 * STEP_BORDER);
-const STEP_SLOT_WIDTH = STEP_SIZE + (2 * STEP_BORDER) + (2 * STEP_MARGIN);
+const STEP_BORDER = 0.4;
+const AVATAR_SIZE = 2.2;
 
-function cent (relSize: number): number {
-    return Math.ceil((relSize / 100) * RESOLUTION);
+function cent (realSize: number, realView: number): number {
+    return Math.ceil((realSize / 100) * realView);
 }
 
 const mapTiles: Tile[] = [];
@@ -51,7 +41,7 @@ const mapTiles: Tile[] = [];
 export function setupCanvasContext (
     ctx: CanvasRenderingContext2D,
 ) {
-    // ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = false;
 }
 
 export function renderInto (
@@ -59,33 +49,58 @@ export function renderInto (
     model: Model,
 ) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.clearRect(0, 0, model.viewSize, model.viewSize);
 
-    const tileSizes: TileSizes = {
-        slot: cent(STEP_SLOT_WIDTH),
-        stepMargin: cent(STEP_MARGIN),
-        stepWidth: cent(STEP_WIDTH),
-        stepBorder: cent(STEP_BORDER),
+    const sizes: RelativeSizes = {
+        view: model.viewSize,
+        slot: cent(STEP_SIZE + (2 * STEP_BORDER) + (2 * STEP_MARGIN), model.viewSize),
+        stepMargin: cent(STEP_MARGIN, model.viewSize),
+        step: cent(STEP_SIZE + (2 * STEP_BORDER), model.viewSize),
+        stepBorder: cent(STEP_BORDER, model.viewSize),
+        avatar: cent(AVATAR_SIZE, model.viewSize),
     };
-    console.log(tileSizes);
 
     // render step tiles
-    ctx.lineWidth = tileSizes.stepBorder;
+    ctx.lineWidth = sizes.stepBorder;
     ctx.strokeStyle = 'black';
     for (let tile of mapTiles) {
-        renderStep(ctx, tile, tileSizes);
+        renderStep(ctx, tile, sizes);
     }
+
+    // render avatar
+    renderAvatar(ctx, mapTiles[0], sizes);
 }
 
 function renderStep (
     ctx: CanvasRenderingContext2D,
     tile: Tile,
-    { slot, stepMargin, stepWidth }: TileSizes,
+    sizes: RelativeSizes,
 ) {
-    const x = (RESOLUTION / 2) - (slot / 2) + (tile.x * slot);
-    const y = (RESOLUTION / 2) - (slot / 2) + (tile.y * slot);
-    ctx.setTransform(1, 0, 0, 1, x, y);
-    ctx.strokeRect(stepMargin, stepMargin, stepWidth, stepWidth);
+    const { slot, stepMargin, step } = sizes;
+    const [ x, y ] = realPosition(tile, sizes);
+    ctx.setTransform(1, 0, 0, 1, x - (slot / 2), y - (slot / 2));
+    ctx.strokeRect(stepMargin, stepMargin, step, step);
+}
+
+function renderAvatar (
+    ctx: CanvasRenderingContext2D,
+    position: { x: number, y: number },
+    sizes: RelativeSizes,
+) {
+    const { avatar } = sizes;
+    const [ x, y ] = realPosition(position, sizes);
+    ctx.fillStyle = 'orange';
+    ctx.setTransform(1, 0, 0, 1, x - (avatar / 2), y - (avatar / 2));
+    ctx.fillRect(0, 0, avatar, avatar);
+}
+
+function realPosition (
+    position: { x: number, y: number },
+    { view, slot }: RelativeSizes,
+): [ number, number ] {
+    const x = (view / 2) + (position.x * slot);
+    const y = (view / 2) + (position.y * slot);
+    return [ x, y];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,4 +134,4 @@ for (let rim = 0; rim < RIMS_LEVELS; rim += 1) {
     addTile(-rimHalfWide, -rimHalfWide ); // north/west line
 }
 
-// sepcial tiels
+// special tiles
