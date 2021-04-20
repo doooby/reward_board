@@ -1,12 +1,10 @@
 # HOW TO
-import `dist/app.js`
-and
-```
-    globalThis.D3O_RewardBoard({ ...options });
-```
+see demo
 
-options:
-- to be written
+config:
+element: HTMLElement;
+position?: { x: number, y: number };
+onStepRequested?: (position: { x: number, y: number }) => void;
 
 # DEVELOPMENT
 `` yarn install
