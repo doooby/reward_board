@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import { Config, Model } from './model';
+import { Position, PossibleSteps } from './board';
 import StatefulUI from './components/StatefulUI';
 
 import '../styles.scss';
@@ -18,7 +19,7 @@ import '../styles.scss';
         this.model = {
             viewSize: 0,
             wrapperElement: config.wrapperElement!,
-            avatarPosition: { x: 0, y: 0 },
+            avatarPosition: new Position(0, 0),
         }
 
         let setModel: (model: Model) => void;
@@ -55,6 +56,22 @@ import '../styles.scss';
             viewSize: width,
         });
     }
+
+    possibleSteps (): PossibleSteps {
+        return this.model.avatarPosition.possibleSteps();
+    }
+
+    step (direction: keyof PossibleSteps): null | Position {
+        const newAvatarPosition = this.model.avatarPosition.step(direction);
+        if (!newAvatarPosition || !newAvatarPosition.isOnBoard()) return null;
+
+        this.updateModel({
+            ...this.model,
+            avatarPosition: newAvatarPosition,
+        });
+        return newAvatarPosition;
+    }
+
 };
 
 const initializers = {

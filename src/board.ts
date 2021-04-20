@@ -1,5 +1,12 @@
 import { Model } from './model';
 
+export interface PossibleSteps {
+    up: boolean,
+    right: boolean,
+    down: boolean,
+    left: boolean,
+}
+
 interface Tile {
     x: number;
     y: number;
@@ -21,11 +28,80 @@ export const RIM_LAS_LEVEL_STEPS = 8;
 
 const STEP_SIZE = 1.8;
 const STEP_MARGIN = 0;
-const STEP_BORDER = 0.4;
-const AVATAR_SIZE = 2.2;
+const STEP_BORDER = 0.2;
+const AVATAR_SIZE = 2;
 
 function cent (realSize: number, realView: number): number {
     return Math.ceil((realSize / 100) * realView);
+    // return (realSize / 100) * realView;
+}
+
+export class Position {
+    x: number;
+    y: number;
+
+    constructor(x: number, y: number) {
+        if (typeof x !== 'number' || isNaN(x) || typeof y !== 'number' || isNaN(y)) {
+            throw new Error('en.Position.invalid');
+        }
+
+        this.x = x;
+        this.y = y;
+        Object.freeze(this);
+    }
+
+    distance (otherPosition: Position): number {
+        return Math.abs( this.x - otherPosition.x ) +
+            Math.abs( this.y - otherPosition.y );
+    }
+
+    isOnBoard (): boolean {
+        const xIsZero = this.x === 0;
+        const yIsZero = this.y === 0;
+        // home
+        if (xIsZero && yIsZero) return true;
+
+        const x = Math.abs(this.x);
+        const y = Math.abs(this.y);
+
+        // cross
+        if (xIsZero || yIsZero) {
+            const step = xIsZero ? y : x;
+            const limit = ( RIMS_LEVELS * RIM_STEPS ) - RIM_STEPS + RIM_LAS_LEVEL_STEPS;
+            return step <= limit;
+        }
+
+        // on a rim
+        if (x % RIM_STEPS === 0 || y % RIM_STEPS === 0) {
+            const [ a, b ] = [ x, y ].sort((n1, n2) => n1 - n2); // aka [ min, max ]
+            const bIsOnRim = b % RIM_STEPS === 0;
+            const rim = bIsOnRim ? b / RIM_STEPS : a / RIM_STEPS;
+            if (rim > RIMS_LEVELS) return false;
+            const sidestep = bIsOnRim ? a : b;
+            return sidestep <= rim * RIM_STEPS;
+        }
+
+        return false;
+    }
+
+    possibleSteps (): PossibleSteps {
+        return {
+            up: this.step('up')!.isOnBoard(),
+            right: this.step('right')!.isOnBoard(),
+            down: this.step('down')!.isOnBoard(),
+            left: this.step('left')!.isOnBoard(),
+        }
+    }
+
+    step (direction: keyof PossibleSteps): undefined | Position {
+        switch (direction) {
+            case "up": return new Position(this.x, this.y - 1);
+            case "right": return new Position(this.x + 1, this.y);
+            case "down": return new Position(this.x, this.y + 1);
+            case "left": return new Position(this.x - 1, this.y);
+        }
+    }
+
 }
 
 const mapTiles: Tile[] = [];
@@ -68,7 +144,7 @@ export function renderInto (
     }
 
     // render avatar
-    renderAvatar(ctx, mapTiles[0], sizes);
+    renderAvatar(ctx, model.avatarPosition, sizes);
 }
 
 function renderStep (
@@ -100,7 +176,7 @@ function realPosition (
 ): [ number, number ] {
     const x = (view / 2) + (position.x * slot);
     const y = (view / 2) + (position.y * slot);
-    return [ x, y];
+    return [ x, y ];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,3 +1,5 @@
+import { Position } from './board';
+
 export type Config = {
     element: HTMLElement;
     stylesURL: string;
@@ -9,5 +11,5 @@ export type Config = {
 export type Model = {
     viewSize: number;
     wrapperElement: HTMLDivElement;
-    avatarPosition: { x: number, y: number };
+    avatarPosition: Position;
 }
