@@ -2,14 +2,12 @@ import { Position } from './board';
 
 export type Config = {
     element: HTMLElement;
-    stylesURL: string;
-
-    shadowRoot?: ShadowRoot;
-    wrapperElement?: HTMLDivElement;
+    position?: { x: number, y: number };
+    onStepRequested?: (position: Position) => void;
 }
 
 export type Model = {
     viewSize: number;
     wrapperElement: HTMLDivElement;
-    avatarPosition: Position;
+    avatarPosition: null | Position;
 }

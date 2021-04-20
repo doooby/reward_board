@@ -1,25 +1,26 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import { Config, Model } from './model';
-import { Position, PossibleSteps } from './board';
+import {Position, PossibleSteps} from './board';
 import StatefulUI from './components/StatefulUI';
 
-import '../styles.scss';
-
 (globalThis as any).D3O_RewardBoard = class {
+    config: Config;
     model: Model;
     updateModel: (model: Model) => void;
 
     constructor (config: Config) {
-        config.shadowRoot = config.element.attachShadow({ mode: 'closed' });
-        initializers.addContentStyles(config);
-        initializers.addExternalStyles(config);
-        initializers.addWrapperElement(config);
+        this.config = config;
+
+        const shadowRoot = config.element.attachShadow({ mode: 'closed' });
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('wrapper');
+        shadowRoot.appendChild(wrapper);
 
         this.model = {
             viewSize: 0,
-            wrapperElement: config.wrapperElement!,
-            avatarPosition: new Position(0, 0),
+            wrapperElement: wrapper,
+            avatarPosition: Position.parse(config.position),
         }
 
         let setModel: (model: Model) => void;
@@ -47,7 +48,7 @@ import '../styles.scss';
                 finally {}
             }
         );
-        observer.observe(config.wrapperElement!);
+        observer.observe(wrapper);
     }
 
     changeWidth (width: number) {
@@ -58,48 +59,31 @@ import '../styles.scss';
     }
 
     possibleSteps (): PossibleSteps {
-        return this.model.avatarPosition.possibleSteps();
+        const { avatarPosition } = this.model;
+        if (!avatarPosition) return {
+            up: false,
+            right: false,
+            down: false,
+            left: false,
+        }
+        return avatarPosition.possibleSteps();
     }
 
-    step (direction: keyof PossibleSteps): null | Position {
-        const newAvatarPosition = this.model.avatarPosition.step(direction);
-        if (!newAvatarPosition || !newAvatarPosition.isOnBoard()) return null;
+    step (direction: keyof PossibleSteps) {
+        const { avatarPosition } = this.model;
+        if (!avatarPosition) return;
+        const position = avatarPosition.step(direction);
+        if (!position || !position.isOnBoard()) return;
 
+        setTimeout(() => this.config.onStepRequested?.(position), 0);
+    }
+
+    setPosition (value: { x: number, y: number }) {
+        const position = Position.parse(value);
         this.updateModel({
             ...this.model,
-            avatarPosition: newAvatarPosition,
+            avatarPosition: position,
         });
-        return newAvatarPosition;
     }
-
-};
-
-const initializers = {
-
-    addContentStyles (config: Config) {
-        const style = document.createElement('style');
-        style.textContent = `
-        .wrapper {
-            //width: 100%;
-            //height: 100%;
-            visibility: hidden;
-        }
-    `;
-        config.shadowRoot!.appendChild(style);
-    },
-
-    addExternalStyles (config: Config) {
-        const externalStyles = document.createElement('link');
-        externalStyles.rel = 'stylesheet';
-        externalStyles.href = config.stylesURL;
-        config.shadowRoot!.appendChild(externalStyles);
-    },
-
-    addWrapperElement (config: Config) {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('wrapper');
-        config.wrapperElement = wrapper;
-        config.shadowRoot!.appendChild(wrapper);
-    },
 
 };

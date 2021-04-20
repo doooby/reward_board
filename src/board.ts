@@ -26,10 +26,10 @@ export const RIMS_LEVELS = 4;
 export const RIM_STEPS = 3;
 export const RIM_LAS_LEVEL_STEPS = 8;
 
-const STEP_SIZE = 1.8;
+const STEP_SIZE = 2.1;
 const STEP_MARGIN = 0;
-const STEP_BORDER = 0.2;
-const AVATAR_SIZE = 2;
+const STEP_BORDER = STEP_SIZE / 10;
+const AVATAR_SIZE = STEP_SIZE;
 
 function cent (realSize: number, realView: number): number {
     return Math.ceil((realSize / 100) * realView);
@@ -48,6 +48,18 @@ export class Position {
         this.x = x;
         this.y = y;
         Object.freeze(this);
+    }
+
+    static parse (value?: { x: number, y: number }): null | Position {
+        if (!value) return null;
+        try {
+            return new Position(value.x, value.y);
+        }
+        catch (err) {
+            console.error('D3O_RewardBoard invalid position:', value);
+            console.error(err);
+            return null;
+        }
     }
 
     distance (otherPosition: Position): number {
@@ -144,7 +156,7 @@ export function renderInto (
     }
 
     // render avatar
-    renderAvatar(ctx, model.avatarPosition, sizes);
+    if (model.avatarPosition) renderAvatar(ctx, model.avatarPosition, sizes);
 }
 
 function renderStep (
