@@ -1,5 +1,5 @@
 import { Config, Model, Position, PossibleSteps } from './model';
-import Board from './Board';
+import View from './View';
 
 (globalThis as any).D3O_RewardBoard = class {
     config: Config;
@@ -7,13 +7,13 @@ import Board from './Board';
         viewSize: 0,
         avatarPosition: null,
     };
-    board: Board;
+    view: View;
 
     constructor (config: Config) {
         this.config = config;
 
-        this.board = new Board();
-        this.board.attach(config.element.attachShadow({ mode: 'closed' }));
+        this.view = new View();
+        this.view.attach(config.element.attachShadow({ mode: 'closed' }));
         this.updateModel({
             ...this.model,
             avatarPosition: Position.parse(config.position),
@@ -31,12 +31,12 @@ import Board from './Board';
                 finally {}
             }
         );
-        observer.observe(this.board.wrapper);
+        observer.observe(this.view.wrapper);
     }
 
     updateModel (model: Model) {
         this.model = model;
-        this.board.render(this.model);
+        this.view.render(this.model);
     }
 
     possibleSteps (): PossibleSteps {

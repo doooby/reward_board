@@ -5,7 +5,7 @@ const STEP_MARGIN = 0;
 const STEP_BORDER = STEP_SIZE / 10;
 const AVATAR_SIZE = STEP_SIZE;
 
-export default class Board {
+export default class View {
     wrapper: HTMLDivElement;
     canvas: HTMLCanvasElement;
     canvasCtx: null | CanvasRenderingContext2D = null;
