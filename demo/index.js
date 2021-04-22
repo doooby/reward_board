@@ -1,5 +1,6 @@
 (function () {
     const directions = ['up', 'right', 'down', 'left'];
+    let lastSelectedReward;
 
     const buttons = {};
     for (let direction of directions) {
@@ -18,10 +19,16 @@
         rewards: [
             { x: 6, y: 6, style: { color: 'red' } },
         ],
-        onStepRequested(position, reward) {
-            console.log('user requested move to', position, reward);
+        onStepRequested (position, reward) {
+            console.log('user requested move to: ', position, reward);
             REWARDS.setPosition(position);
             updateButtons(REWARDS.possibleSteps());
+        },
+        onMouseOverReward (reward) {
+            if (lastSelectedReward !== reward) {
+                lastSelectedReward = reward;
+                console.log('selected reward: ', {reward});
+            }
         }
     });
     for (let direction of directions) {

@@ -3,6 +3,7 @@ export type Config = {
     position?: { x: number, y: number };
     rewards: RewardItem[];
     onStepRequested?: (position: Position, reward?: RewardItem) => void;
+    onMouseOverReward?: (reward: undefined | RewardItem) => void;
 }
 
 export type Model = {

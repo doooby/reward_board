@@ -13,7 +13,7 @@ import View from './View';
     constructor (config: Config) {
         this.config = config;
 
-        this.view = new View();
+        this.view = new View(this.onMouseMove);
         this.view.attach(config.element.attachShadow({ mode: 'closed' }));
         this.updateModel({
             ...this.model,
@@ -35,6 +35,13 @@ import View from './View';
         );
         observer.observe(this.view.wrapper);
     }
+
+    onMouseMove = (position: undefined | Position) => {
+        const reward: undefined | RewardItem = position && this.model.rewards.find(
+            ({ x, y }) => x === position.x && y === position.y
+        );
+        this.config.onMouseOverReward?.(reward);
+    };
 
     updateModel (model: Model) {
         this.model = model;

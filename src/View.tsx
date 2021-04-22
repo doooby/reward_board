@@ -1,4 +1,5 @@
-import { BoardSizes, Model, mapTiles, RewardItem } from './model';
+import {BoardSizes, Model, mapTiles, RewardItem, Position} from './model';
+import throttle from 'lodash.throttle';
 
 const STEP_SIZE = 2.1;
 const STEP_MARGIN = 0;
@@ -6,16 +7,25 @@ const STEP_BORDER = STEP_SIZE / 10;
 const AVATAR_SIZE = STEP_SIZE;
 
 export default class View {
+    mouseOverPosition: null | Position = null;
+    onMouseMoveCallback: (position: undefined | Position) => void;
+
     wrapper: HTMLDivElement;
     canvas: HTMLCanvasElement;
     canvasCtx: null | CanvasRenderingContext2D = null;
 
-    constructor () {
+    currentModel: null | Model = null;
+    currentSizes: null | BoardSizes = null;
+
+    constructor (onMouseMove: (position: undefined | Position) => void) {
+        this.onMouseMoveCallback = onMouseMove;
+
         this.wrapper = document.createElement('div');
         this.wrapper.classList.add('wrapper');
 
         this.canvas = document.createElement('canvas');
         this.resetCanvas(0);
+        this.canvas.addEventListener('mousemove', this.onMouseMove);
         this.wrapper.appendChild(this.canvas);
     }
 
@@ -24,6 +34,7 @@ export default class View {
     }
 
     render (model: Model) {
+        this.currentModel = model;
         if (model.viewSize !== this.canvas.width || model.viewSize !== this.canvas.height) {
             this.resetCanvas(model.viewSize);
         }
@@ -33,7 +44,7 @@ export default class View {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, model.viewSize, model.viewSize);
 
-        const sizes: BoardSizes = {
+        this.currentSizes = {
             view: model.viewSize,
             slot: cent(STEP_SIZE + (2 * STEP_BORDER) + (2 * STEP_MARGIN), model.viewSize),
             stepMargin: cent(STEP_MARGIN, model.viewSize),
@@ -43,19 +54,19 @@ export default class View {
         };
 
         // render step tiles
-        ctx.lineWidth = sizes.stepBorder;
+        ctx.lineWidth = this.currentSizes.stepBorder;
         ctx.strokeStyle = 'black';
         for (let tile of mapTiles) {
-            renderStep(ctx, tile, sizes);
+            renderStep(ctx, tile, this.currentSizes);
         }
 
         // render rewards
         for (let reward of model.rewards) {
-            renderReward(ctx, reward, sizes);
+            renderReward(ctx, reward, this.currentSizes);
         }
 
         // render avatar
-        if (model.avatarPosition) renderAvatar(ctx, model.avatarPosition, sizes);
+        if (model.avatarPosition) renderAvatar(ctx, model.avatarPosition, this.currentSizes);
     }
 
     resetCanvas (viewSize: number) {
@@ -66,6 +77,33 @@ export default class View {
         if (this.canvasCtx === null) return;
         this.canvasCtx.imageSmoothingEnabled = false;
     }
+
+    onMouseMove = throttle(
+        (e: MouseEvent) => {
+            const lastPosition = this.mouseOverPosition;
+            e.stopPropagation();
+            if (!this.currentModel || !this.currentSizes) return;
+
+            const slotSize = this.currentSizes.slot
+            const centerOffset = this.currentModel.viewSize / 2;
+            const rect = this.canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.x - centerOffset + slotSize/2) / this.currentSizes.slot);
+            const y = Math.floor((e.clientY - rect.y - centerOffset + slotSize/2) / this.currentSizes.slot);
+            const position = new Position(x, y);
+
+            if (!position.isOnBoard()) {
+                this.mouseOverPosition = null;
+            }
+            else if (lastPosition?.x !== position.x || lastPosition?.y !== position.y) {
+                this.mouseOverPosition = position;
+            }
+
+            if (lastPosition !== this.mouseOverPosition) {
+                this.onMouseMoveCallback(this.mouseOverPosition || undefined);
+            }
+        },
+        400
+    );
 
 }
 
