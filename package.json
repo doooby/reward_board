@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "demo:serve": "node demo/lib/server.js"
+    "demo:serve": "node demo/lib/server.js",
+    "start": "node demo/lib/server.js"
   },
   "dependencies": {
     "@types/jest": "^26.0.22",
@@ -17,5 +18,8 @@
     "webpack": "^5.31.2",
     "webpack-chain": "^6.5.1",
     "webpack-cli": "^4.6.0"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }
