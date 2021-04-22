@@ -16,12 +16,17 @@
         <button id="btn-down" class="btn btn-primary mr-3" disabled="disabled">DOWN</button>
         <button id="btn-left" class="btn btn-primary mr-3" disabled="disabled">LEFT</button>
     </div>
-    <div
-      id="board-container"
-      class="bg-white"
-      style="min-width: 100px; max-width: 1000px; width: 100%;"
-    >
+    <div class="d-flex">
+        <div
+         id="board-container"
+         class="bg-white flex-fill"
+         style="min-width: 100px; max-width: 1000px;"
+        >
+        </div>
+        <ul id="printout" class="p-2 list-group list-group-flush" style="flex-basis: 300px; max-height: 1000px; overflow-y: scroll;">
+        </ul>
     </div>
+
 </div>
 <script src="/assets/app.js"></script>
 <script src="/assets/demo.js"></script>

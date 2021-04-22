@@ -1,4 +1,5 @@
 (function () {
+    const printout = document.getElementById('printout');
     const directions = ['up', 'right', 'down', 'left'];
     let lastSelectedReward;
 
@@ -13,6 +14,15 @@
         }
     }
 
+    function print (...stuff) {
+        const item = document.createElement('li');
+        item.textContent = JSON.stringify(stuff);
+        item.className = 'list-group-item list-group-item-info';
+        printout.prepend(item);
+        printout.scrollTop = 0;
+        console.log(...stuff);
+    }
+
     const REWARDS = new window.D3O_RewardBoard({
         element: document.querySelector('#board-container'),
         position: { x: 0, y: 0 },
@@ -20,14 +30,14 @@
             { x: 6, y: 6, style: { color: 'red' } },
         ],
         onStepRequested (position, reward) {
-            console.log('user requested move to: ', position, reward);
+            print('user requested move to: ', position, reward);
             REWARDS.setPosition(position);
             updateButtons(REWARDS.possibleSteps());
         },
         onMouseOverReward (reward) {
             if (lastSelectedReward !== reward) {
                 lastSelectedReward = reward;
-                console.log('selected reward: ', {reward});
+                print('selected reward: ', {reward});
             }
         }
     });
