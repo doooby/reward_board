@@ -1,61 +1,42 @@
-import React from 'react';
-import ReactDom from 'react-dom';
-import { Config, Model } from './model';
-import {Position, PossibleSteps} from './board';
-import StatefulUI from './components/StatefulUI';
+import { Config, Model, Position, PossibleSteps } from './model';
+import Board from './Board';
 
 (globalThis as any).D3O_RewardBoard = class {
     config: Config;
-    model: Model;
-    updateModel: (model: Model) => void;
+    model: Model = {
+        viewSize: 0,
+        avatarPosition: null,
+    };
+    board: Board;
 
     constructor (config: Config) {
         this.config = config;
 
-        const shadowRoot = config.element.attachShadow({ mode: 'closed' });
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('wrapper');
-        shadowRoot.appendChild(wrapper);
-
-        this.model = {
-            viewSize: 0,
-            wrapperElement: wrapper,
+        this.board = new Board();
+        this.board.attach(config.element.attachShadow({ mode: 'closed' }));
+        this.updateModel({
+            ...this.model,
             avatarPosition: Position.parse(config.position),
-        }
-
-        let setModel: (model: Model) => void;
-        this.updateModel = (model) => {
-            this.model = model;
-            setModel(model);
-        };
-
-        ReactDom.render(
-            <StatefulUI
-                defaultModel={this.model}
-                registerModelSetter={
-                    (setter: (model: Model) => void) => setModel = setter
-                }
-            />,
-            this.model.wrapperElement,
-        );
+        });
 
         const observer = new ResizeObserver(
             (entries: ResizeObserverEntry[]) => {
                 try {
                     const width = entries[0].contentRect.width;
-                    this.changeWidth(width);
+                    this.updateModel({
+                        ...this.model,
+                        viewSize: width,
+                    });
                 }
                 finally {}
             }
         );
-        observer.observe(wrapper);
+        observer.observe(this.board.wrapper);
     }
 
-    changeWidth (width: number) {
-        this.updateModel({
-            ...this.model,
-            viewSize: width,
-        });
+    updateModel (model: Model) {
+        this.model = model;
+        this.board.render(this.model);
     }
 
     possibleSteps (): PossibleSteps {

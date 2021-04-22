@@ -6,8 +6,8 @@ const config = new Config();
 
 config.mode('production');
 
-config.mode('development');
-config.devtool('eval-cheap-module-source-map');
+// config.mode('development');
+// config.devtool('eval-cheap-module-source-map');
 
 config.resolve.extensions
     .add('.js')
