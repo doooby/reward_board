@@ -1,18 +1,22 @@
 export type Config = {
     element: HTMLElement;
     position?: { x: number, y: number };
-    onStepRequested?: (position: Position) => void;
+    rewards: RewardItem[];
+    onStepRequested?: (position: Position, reward?: RewardItem) => void;
 }
 
 export type Model = {
     viewSize: number;
     avatarPosition: null | Position;
+    rewards: Readonly<RewardItem[]>;
 }
 
-export interface Tile {
+export interface RewardItem {
     x: number;
     y: number;
-    key: string;
+    style: {
+        color: string;
+    };
 }
 
 export interface BoardSizes {
@@ -115,10 +119,10 @@ export class Position {
 
 }
 
-export const mapTiles: Tile[] = [];
+export const mapTiles: { x: number, y: number }[] = [];
 
 function addTile (x: number, y: number ) {
-    mapTiles.push({ x, y, key: `${x}:${y}` });
+    mapTiles.push({ x, y });
 }
 
 addTile(0, 0);

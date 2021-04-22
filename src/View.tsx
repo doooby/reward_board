@@ -1,4 +1,4 @@
-import {BoardSizes, Model, mapTiles, Tile} from './model';
+import { BoardSizes, Model, mapTiles, RewardItem } from './model';
 
 const STEP_SIZE = 2.1;
 const STEP_MARGIN = 0;
@@ -49,6 +49,11 @@ export default class View {
             renderStep(ctx, tile, sizes);
         }
 
+        // render rewards
+        for (let reward of model.rewards) {
+            renderReward(ctx, reward, sizes);
+        }
+
         // render avatar
         if (model.avatarPosition) renderAvatar(ctx, model.avatarPosition, sizes);
     }
@@ -66,7 +71,7 @@ export default class View {
 
 function renderStep (
     ctx: CanvasRenderingContext2D,
-    tile: Tile,
+    tile: { x: number, y: number },
     sizes: BoardSizes,
 ) {
     const { slot, stepMargin, step } = sizes;
@@ -83,6 +88,18 @@ function renderAvatar (
     const { avatar } = sizes;
     const [ x, y ] = realPosition(position, sizes);
     ctx.fillStyle = 'orange';
+    ctx.setTransform(1, 0, 0, 1, x - (avatar / 2), y - (avatar / 2));
+    ctx.fillRect(0, 0, avatar, avatar);
+}
+
+function renderReward (
+    ctx: CanvasRenderingContext2D,
+    rewardItem: RewardItem,
+    sizes: BoardSizes,
+) {
+    const { avatar } = sizes;
+    const [ x, y ] = realPosition(rewardItem, sizes);
+    ctx.fillStyle = rewardItem.style.color;
     ctx.setTransform(1, 0, 0, 1, x - (avatar / 2), y - (avatar / 2));
     ctx.fillRect(0, 0, avatar, avatar);
 }

@@ -15,8 +15,11 @@
     const REWARDS = new window.D3O_RewardBoard({
         element: document.querySelector('#board-container'),
         position: { x: 0, y: 0 },
-        onStepRequested(position) {
-            console.log('user requested move to', position);
+        rewards: [
+            { x: 6, y: 6, style: { color: 'red' } },
+        ],
+        onStepRequested(position, reward) {
+            console.log('user requested move to', position, reward);
             REWARDS.setPosition(position);
             updateButtons(REWARDS.possibleSteps());
         }

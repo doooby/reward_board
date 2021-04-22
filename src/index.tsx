@@ -1,4 +1,4 @@
-import { Config, Model, Position, PossibleSteps } from './model';
+import {Config, Model, Position, PossibleSteps, RewardItem} from './model';
 import View from './View';
 
 (globalThis as any).D3O_RewardBoard = class {
@@ -6,6 +6,7 @@ import View from './View';
     model: Model = {
         viewSize: 0,
         avatarPosition: null,
+        rewards: [],
     };
     view: View;
 
@@ -17,6 +18,7 @@ import View from './View';
         this.updateModel({
             ...this.model,
             avatarPosition: Position.parse(config.position),
+            rewards: Object.freeze(config.rewards.slice(0)),
         });
 
         const observer = new ResizeObserver(
@@ -56,7 +58,10 @@ import View from './View';
         const position = avatarPosition.step(direction);
         if (!position || !position.isOnBoard()) return;
 
-        setTimeout(() => this.config.onStepRequested?.(position), 0);
+        const reward: undefined | RewardItem = this.model.rewards.find(
+            ({ x, y }) => x === position.x && y === position.y
+        );
+        setTimeout(() => this.config.onStepRequested?.(position, reward), 0);
     }
 
     setPosition (value: { x: number, y: number }) {
