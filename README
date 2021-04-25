@@ -1,10 +1,19 @@
+# demo
+https://calm-dusk-14278.herokuapp.com/
+
 # HOW TO
-see demo
+see demo/index.js
 
 config:
-element: HTMLElement;
-position?: { x: number, y: number };
-onStepRequested?: (position: { x: number, y: number }) => void;
+```
+type Config = {
+    element: HTMLElement;
+    position?: { x: number, y: number };
+    rewards: RewardItem[];
+    onStepRequested?: (position: Position, reward?: RewardItem) => void;
+    onMouseOverReward?: (reward: undefined | RewardItem) => void;
+}
+```
 
 # DEVELOPMENT
 `` yarn install
