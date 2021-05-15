@@ -13,7 +13,10 @@ import View from './View';
     constructor (config: Config) {
         this.config = config;
 
-        this.view = new View(this.onMouseMove);
+        this.view = new View({
+            onPositionClick: this.onPositionClicked,
+            onMouseMove: this.onMouseMove,
+        });
         this.view.attach(config.element.attachShadow({ mode: 'closed' }));
         this.updateModel({
             ...this.model,
@@ -36,10 +39,13 @@ import View from './View';
         observer.observe(this.view.wrapper);
     }
 
+    onPositionClicked = (position: Position) => {
+        const reward = this.rewardOnPositionGet(position);
+        this.config.onPositionClick?.(position, reward);
+    };
+
     onMouseMove = (position: undefined | Position) => {
-        const reward: undefined | RewardItem = position && this.model.rewards.find(
-            ({ x, y }) => x === position.x && y === position.y
-        );
+        const reward = this.rewardOnPositionGet(position);
         this.config.onMouseOverReward?.(reward);
     };
 
@@ -77,6 +83,12 @@ import View from './View';
             ...this.model,
             avatarPosition: position,
         });
+    }
+
+    rewardOnPositionGet (position: undefined | Position): undefined | RewardItem {
+        return position && this.model.rewards.find(
+            ({ x, y }) => x === position.x && y === position.y
+        );
     }
 
 };

@@ -34,11 +34,14 @@
             REWARDS.setPosition(position);
             updateButtons(REWARDS.possibleSteps());
         },
-        onMouseOverReward (reward) {
-            if (lastSelectedReward !== reward) {
-                lastSelectedReward = reward;
-                print('selected reward: ', {reward});
-            }
+        // onMouseOverReward (reward) {
+        //     if (lastSelectedReward !== reward) {
+        //         lastSelectedReward = reward;
+        //         print('hover on reward: ', {reward});
+        //     }
+        // },
+        onPositionClick (position, reward) {
+            print('click on: ', position, reward);
         }
     });
     for (let direction of directions) {
