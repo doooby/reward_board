@@ -11,7 +11,7 @@ app.engine('html', require('hbs').__express);
 app.use(express.json())
 
 app.get('/', (req, res) => {
-    res.render('home_page.html');
+    res.render('home_page.html', { rewards: REWARDS });
 });
 
 app.get('/rewards', (req, res) => {
@@ -59,8 +59,8 @@ const PLAYER = {
 };
 
 const REWARDS = [
-    { x: 3, y: -3, style: { color: 'red' }, reward_id: 1 },
-    { x: 6, y: -6, style: { color: 'red' }, reward_id: 2 },
+    { x: 3, y: -3, style: { color: 'red' }, reward_id: 1, text: 'Nové profilové obrázky' },
+    { x: 6, y: -6, style: { color: 'red' }, reward_id: 2, text: 'Možnost vlastní profilové fotky' },
 ];
 
 const RIMS_LEVELS = 4;

@@ -46,8 +46,16 @@ window.D3O_RewardBoard(async ({Board, fetch}) => {
 
     // udalost pri pohybu mezi pozicema
     function onMouseOverPosition (position) {
+        // odebere predchozi zvyraznenou odmenu
+        let element = document.querySelector('#rewards-list > .active');
+        if (element) element.classList.remove('active');
+
         const reward = position && board.rewardOnPositionGet(position);
-        // zvyraznit odmenu v tabulce?
+        if (reward) {
+            // pokud je mys nad pozici s odmenou, zvyrazni ji v tabulce
+            element = document.querySelector(`#rewards-list > [data-reward-id="${reward.reward_id}"]`);
+            if (element) element.classList.add('active');
+        }
     }
 
     // inicializace UI
