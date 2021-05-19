@@ -8,10 +8,11 @@ config:
 ```
 type Config = {
     element: HTMLElement;
-    position?: { x: number, y: number };
+    defaultPosition?: { x: number, y: number };
     rewards: RewardItem[];
-    onStepRequested?: (position: Position, reward?: RewardItem) => void;
-    onMouseOverReward?: (reward: undefined | RewardItem) => void;
+    onStepRequested?: (position: Position) => void;
+    onPositionClick?: (position: Position) => void;
+    onMouseOverPosition?: (position?: Position) => void;
 }
 ```
 
