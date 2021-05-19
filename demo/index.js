@@ -19,6 +19,9 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
     // };
 
     // udalost po stistku tlacitka pohybu
+    // odesle zatost o pohyb na server
+    // a posune hrace, pokud to bylo uspesne
+    // jinak tlacitka zustanou zablokovana
     async function onStepRequested (position) {
         // aby se ignorovalo dalsi kliknuti nez se to vyhodnoti
         buttons.disableAll();
@@ -34,9 +37,12 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
         // aktualizovat vypis poctu zvybajicich tahu?
         // aktualizuje tlacitka (disabled nemozne pohyby)
         if (result.moves > 0) buttons.update(board);
+        // aktualizace pocitadla tahu
+        document.querySelector('#rewards-moves-left').textContent = result.moves;
     }
 
     // udalost pri kliku na pozici
+    // otevre modal a vypise v nem detail odmeny
     function onPositionClick (position) {
         const reward = board.rewardOnPositionGet(position);
         if (reward) {
@@ -49,6 +55,7 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
     }
 
     // udalost pri pohybu mezi pozicema
+    // zvyrazneni odmeny v tabulce pridanim `.active` pro danou `.list-group-item`
     function onMouseOverPosition (position) {
         // odebere predchozi zvyraznenou odmenu
         let element = document.querySelector('#rewards-list > .active');

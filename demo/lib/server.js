@@ -11,7 +11,10 @@ app.engine('html', require('hbs').__express);
 app.use(express.json())
 
 app.get('/', (req, res) => {
-    res.render('home_page.html', { rewards: REWARDS });
+    res.render('home_page.html', {
+        rewards: REWARDS,
+        moves_left: PLAYER.moves,
+    });
 });
 
 app.get('/rewards', (req, res) => {
@@ -40,6 +43,12 @@ app.post('/move', (req, res) => {
     }
 });
 
+app.post('/reset', (req, res) => {
+    PLAYER.moves = 100;
+    PLAYER.position = { x: 0, y: 0 };
+    res.json(true);
+});
+
 app.get('/assets/*', (req, res) => {
     const file = path.resolve(__dirname, '../../tmp/build', req.params[0]);
     if (fs.existsSync(file)) {
@@ -54,7 +63,7 @@ app.listen(port, () => {
 });
 
 const PLAYER = {
-    moves: 10,
+    moves: 100,
     position: { x: 0, y: 0 },
 };
 

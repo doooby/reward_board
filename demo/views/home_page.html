@@ -14,26 +14,36 @@
 <body class="bg-dark">
 
 <div id="demo" class="p-3 w-100">
-    <div class="mb-3">
+    <div class="mb-3 d-flex justify-content-center">
         <button id="rewards-btn-up" class="btn btn-primary mr-3" disabled="disabled">UP</button>
         <button id="rewards-btn-right" class="btn btn-primary mr-3" disabled="disabled">RIGHT</button>
         <button id="rewards-btn-down" class="btn btn-primary mr-3" disabled="disabled">DOWN</button>
-        <button id="rewards-btn-left" class="btn btn-primary mr-3" disabled="disabled">LEFT</button>
+        <button id="rewards-btn-left" class="btn btn-primary" disabled="disabled">LEFT</button>
     </div>
-    <div class="d-flex">
+    <div class="d-flex justify-content-center">
         <div
          id="rewards-board"
          class="bg-white flex-fill"
          style="min-width: 100px; max-width: 1000px;"
         >
         </div>
-        <ul id="rewards-list" class="p-2 list-group list-group-flush" style="flex-basis: 300px; max-height: 1000px; overflow-y: scroll;">
-            {{#each rewards}}
+        <div class="p-2" style="flex-basis: 300px;">
+            <div class="mb-3 alert alert-secondary">
+                Moves left: <strong id="rewards-moves-left">{{moves_left}}</strong>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-danger" id="reset-btn">
+                    RESET DEMO
+                </button>
+            </div>
+            <ul id="rewards-list" class="list-group list-group-flush">
+                {{#each rewards}}
                 <li class="list-group-item" data-reward-id="{{reward_id}}">
                     {{text}}
                 </li>
-            {{/each}}
-        </ul>
+                {{/each}}
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -59,6 +69,17 @@
 
 <script src="/assets/app.js"></script>
 <script src="/assets/demo.js"></script>
+<script>
+    // reset button
+    window.D3O_RewardBoard(({fetch}) => {
+        const resetButton = document.querySelector('#reset-btn');
+        resetButton.addEventListener('click', async () => {
+            resetButton.disabled = true;
+            await fetch('/reset');
+            location.reload();
+        });
+    });
+</script>
 </body>
 
 </html>
