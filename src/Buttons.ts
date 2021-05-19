@@ -1,4 +1,4 @@
-import Board from "./Board";
+import Board from './Board';
 
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
 

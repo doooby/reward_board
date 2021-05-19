@@ -1,6 +1,6 @@
-import {Config, Model, Position, PossibleSteps, RewardItem} from "./model";
-import View from "./View";
-import Buttons, { ButtonsFinder } from "./Buttons";
+import {Config, Model, Position, PossibleSteps, RewardItem} from './model';
+import View from './View';
+import Buttons, { ButtonsFinder } from './Buttons';
 
 export default class Board {
     config: Config;

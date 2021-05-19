@@ -1,4 +1,4 @@
-window.D3O_RewardBoard(async ({Board, fetch}) => {
+window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
     const apiBaseUrl = 'http://localhost:3000';
 
     // pri nacteni stranky je potreba ziskat data odmen:
@@ -40,7 +40,11 @@ window.D3O_RewardBoard(async ({Board, fetch}) => {
     function onPositionClick (position) {
         const reward = board.rewardOnPositionGet(position);
         if (reward) {
-            // zobrazit modal s detailem odmeny
+            const modal = document.querySelector('#rewards-modal');
+            const template = new Template(modal.querySelector('template'));
+            template.set('text', reward.text);
+            template.insertInto(modal.querySelector('.modal-body'));
+            $(modal).modal({ show: true });
         }
     }
 
@@ -61,7 +65,7 @@ window.D3O_RewardBoard(async ({Board, fetch}) => {
     // inicializace UI
     const buttons = Board.findButtons(direction => document.getElementById(`rewards-btn-${direction}`));
     const board = new Board({
-        element: document.querySelector('#board-container'),
+        element: document.querySelector('#rewards-board'),
         defaultPosition: defaultPlayerData.position,
         rewards,
         onStepRequested,

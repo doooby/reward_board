@@ -112,10 +112,10 @@ export class Position {
 
     step (direction: keyof PossibleSteps): undefined | Position {
         switch (direction) {
-            case "up": return new Position(this.x, this.y - 1);
-            case "right": return new Position(this.x + 1, this.y);
-            case "down": return new Position(this.x, this.y + 1);
-            case "left": return new Position(this.x - 1, this.y);
+            case 'up': return new Position(this.x, this.y - 1);
+            case 'right': return new Position(this.x + 1, this.y);
+            case 'down': return new Position(this.x, this.y + 1);
+            case 'left': return new Position(this.x - 1, this.y);
         }
     }
 
