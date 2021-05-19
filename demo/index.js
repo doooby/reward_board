@@ -1,5 +1,5 @@
 window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
-    const apiBaseUrl = 'http://localhost:3000';
+    const apiBaseUrl = '';
 
     // pri nacteni stranky je potreba ziskat data odmen:
     const rewards = await fetch(apiBaseUrl + '/rewards', { method: 'GET' });
