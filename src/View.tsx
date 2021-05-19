@@ -8,6 +8,7 @@ const AVATAR_SIZE = STEP_SIZE;
 
 export default class View {
     mouseOverPosition: null | Position = null;
+    onPositionClickCallback: (position: Position) => void;
     onMouseMoveCallback: (position: undefined | Position) => void;
 
     wrapper: HTMLDivElement;
@@ -17,8 +18,12 @@ export default class View {
     currentModel: null | Model = null;
     currentSizes: null | BoardSizes = null;
 
-    constructor (onMouseMove: (position: undefined | Position) => void) {
-        this.onMouseMoveCallback = onMouseMove;
+    constructor (props: {
+        onPositionClick: (position: Position) => void,
+        onMouseMove: (position: undefined | Position) => void,
+    }) {
+        this.onPositionClickCallback = props.onPositionClick;
+        this.onMouseMoveCallback = props.onMouseMove;
 
         this.wrapper = document.createElement('div');
         this.wrapper.classList.add('wrapper');
@@ -26,6 +31,7 @@ export default class View {
         this.canvas = document.createElement('canvas');
         this.resetCanvas(0);
         this.canvas.addEventListener('mousemove', this.onMouseMove);
+        this.canvas.addEventListener('click', this.onPositionClick);
         this.wrapper.appendChild(this.canvas);
     }
 
@@ -78,18 +84,20 @@ export default class View {
         this.canvasCtx.imageSmoothingEnabled = false;
     }
 
+    onPositionClick = (e: MouseEvent) => {
+        e.stopPropagation();
+        const position = mousePositionGet(this, e);
+        if (position?.isOnBoard()) {
+            this.onPositionClickCallback(position);
+        }
+    }
+
     onMouseMove = throttle(
         (e: MouseEvent) => {
             const lastPosition = this.mouseOverPosition;
             e.stopPropagation();
-            if (!this.currentModel || !this.currentSizes) return;
-
-            const slotSize = this.currentSizes.slot
-            const centerOffset = this.currentModel.viewSize / 2;
-            const rect = this.canvas.getBoundingClientRect();
-            const x = Math.floor((e.clientX - rect.x - centerOffset + slotSize/2) / this.currentSizes.slot);
-            const y = Math.floor((e.clientY - rect.y - centerOffset + slotSize/2) / this.currentSizes.slot);
-            const position = new Position(x, y);
+            const position = mousePositionGet(this, e);
+            if (position === null) return;
 
             if (!position.isOnBoard()) {
                 this.mouseOverPosition = null;
@@ -154,4 +162,15 @@ function realPosition (
 function cent (realSize: number, realView: number): number {
     return Math.ceil((realSize / 100) * realView);
     // return (realSize / 100) * realView;
+}
+
+function mousePositionGet(view: View, e: MouseEvent): null | Position {
+    if (!view.currentModel || !view.currentSizes) return null;
+
+    const slotSize = view.currentSizes.slot
+    const centerOffset = view.currentModel.viewSize / 2;
+    const rect = view.canvas.getBoundingClientRect();
+    const x = Math.floor((e.clientX - rect.x - centerOffset + slotSize/2) / view.currentSizes.slot);
+    const y = Math.floor((e.clientY - rect.y - centerOffset + slotSize/2) / view.currentSizes.slot);
+    return new Position(x, y);
 }

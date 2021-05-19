@@ -1,9 +1,10 @@
 export type Config = {
     element: HTMLElement;
-    position?: { x: number, y: number };
+    defaultPosition?: { x: number, y: number };
     rewards: RewardItem[];
-    onStepRequested?: (position: Position, reward?: RewardItem) => void;
-    onMouseOverReward?: (reward: undefined | RewardItem) => void;
+    onStepRequested?: (position: Position) => void;
+    onPositionClick?: (position: Position) => void;
+    onMouseOverPosition?: (position?: Position) => void;
 }
 
 export type Model = {
@@ -111,10 +112,10 @@ export class Position {
 
     step (direction: keyof PossibleSteps): undefined | Position {
         switch (direction) {
-            case "up": return new Position(this.x, this.y - 1);
-            case "right": return new Position(this.x + 1, this.y);
-            case "down": return new Position(this.x, this.y + 1);
-            case "left": return new Position(this.x - 1, this.y);
+            case 'up': return new Position(this.x, this.y - 1);
+            case 'right': return new Position(this.x + 1, this.y);
+            case 'down': return new Position(this.x, this.y + 1);
+            case 'left': return new Position(this.x - 1, this.y);
         }
     }
 
