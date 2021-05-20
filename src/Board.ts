@@ -7,6 +7,7 @@ export default class Board {
     model: Model = {
         viewSize: 0,
         avatarPosition: null,
+        avatarColor: 'blue',
         rewards: [],
     };
     view: View;
@@ -22,6 +23,7 @@ export default class Board {
         this.updateModel({
             ...this.model,
             avatarPosition: Position.parse(config.defaultPosition),
+            avatarColor: config.avatarColor || this.model.avatarColor,
             rewards: Object.freeze(config.rewards.slice(0)),
         });
 

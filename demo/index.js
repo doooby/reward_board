@@ -5,8 +5,8 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
     const rewards = await fetch(apiBaseUrl + '/rewards', { method: 'GET' });
     if (rewards === null) throw new Error('rewards fetch failed');
     // const rewards = [
-    //     { x: 3, y: -3, style: { color: 'red' }, reward_id: 1 },
-    //     { x: 6, y: -6, style: { color: 'red' }, reward_id: 2 },
+    //     { x: 3, y: -3, color: 'red', label: 'S', id: 1, text: 'something' },
+    //     { x: 6, y: -6, color: 'red', label: '2', id: 2, text: 'something' },
     // ];
 
     // take nacist aktualni pozici uzivatele:
@@ -49,8 +49,13 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
             const modal = document.querySelector('#rewards-modal');
             const template = new Template(modal.querySelector('template'));
             template.set('text', reward.text);
+            template.set('badge', reward.label, el => el.style.backgroundColor = reward.color);
             template.insertInto(modal.querySelector('.modal-body'));
             $(modal).modal({ show: true });
+
+            // odebrat zvyraneni odmene
+            let element = document.querySelector('#rewards-list > .active');
+            if (element) element.classList.remove('active');
         }
     }
 
@@ -64,7 +69,7 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
         const reward = position && board.rewardOnPositionGet(position);
         if (reward) {
             // pokud je mys nad pozici s odmenou, zvyrazni ji v tabulce
-            element = document.querySelector(`#rewards-list > [data-reward-id="${reward.reward_id}"]`);
+            element = document.querySelector(`#rewards-list > [data-reward-id="${reward.id}"]`);
             if (element) element.classList.add('active');
         }
     }
@@ -74,6 +79,7 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
     const board = new Board({
         element: document.querySelector('#rewards-board'),
         defaultPosition: defaultPlayerData.position,
+        avatarColor: '#23a85a',
         rewards,
         onStepRequested,
         onPositionClick,

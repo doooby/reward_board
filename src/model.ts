@@ -2,6 +2,7 @@ export type Config = {
     element: HTMLElement;
     defaultPosition?: { x: number, y: number };
     rewards: RewardItem[];
+    avatarColor?: string;
     onStepRequested?: (position: Position) => void;
     onPositionClick?: (position: Position) => void;
     onMouseOverPosition?: (position?: Position) => void;
@@ -10,15 +11,17 @@ export type Config = {
 export type Model = {
     viewSize: number;
     avatarPosition: null | Position;
+    avatarColor: string;
     rewards: Readonly<RewardItem[]>;
 }
 
 export interface RewardItem {
     x: number;
     y: number;
-    style: {
-        color: string;
-    };
+    color: string;
+    label: string;
+    id: string;
+    text: string;
 }
 
 export interface BoardSizes {
@@ -27,7 +30,6 @@ export interface BoardSizes {
     stepMargin: number,
     step: number,
     stepBorder: number,
-    avatar: number,
 }
 
 export interface PossibleSteps {

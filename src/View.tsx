@@ -1,10 +1,29 @@
 import {BoardSizes, Model, mapTiles, RewardItem, Position} from './model';
 import throttle from 'lodash.throttle';
 
-const STEP_SIZE = 2.1;
+const STEP_SIZE = 2.3;
 const STEP_MARGIN = 0;
 const STEP_BORDER = STEP_SIZE / 10;
-const AVATAR_SIZE = STEP_SIZE;
+
+const boardSizes = {
+    slot: STEP_SIZE + (2 * STEP_BORDER) + (2 * STEP_MARGIN),
+    stepMargin: STEP_MARGIN,
+    step: STEP_SIZE + (2 * STEP_BORDER),
+    stepBorder: STEP_BORDER,
+};
+
+const avatarRelSize = 40;
+const avatarSizes = {
+    thick: 2,
+    headRadius: 7,
+    headY: -7,
+    pathTopY: -1,
+    pathBottomY: 14,
+    path1x: -3,
+    path2x: -10,
+    path3x: 11,
+    path4x: 3,
+}
 
 export default class View {
     mouseOverPosition: null | Position = null;
@@ -52,19 +71,8 @@ export default class View {
 
         this.currentSizes = {
             view: model.viewSize,
-            slot: cent(STEP_SIZE + (2 * STEP_BORDER) + (2 * STEP_MARGIN), model.viewSize),
-            stepMargin: cent(STEP_MARGIN, model.viewSize),
-            step: cent(STEP_SIZE + (2 * STEP_BORDER), model.viewSize),
-            stepBorder: cent(STEP_BORDER, model.viewSize),
-            avatar: cent(AVATAR_SIZE, model.viewSize),
+            ...relativeSizes(boardSizes, model.viewSize),
         };
-
-        // render step tiles
-        ctx.lineWidth = this.currentSizes.stepBorder;
-        ctx.strokeStyle = 'black';
-        for (let tile of mapTiles) {
-            renderStep(ctx, tile, this.currentSizes);
-        }
 
         // render rewards
         for (let reward of model.rewards) {
@@ -72,7 +80,14 @@ export default class View {
         }
 
         // render avatar
-        if (model.avatarPosition) renderAvatar(ctx, model.avatarPosition, this.currentSizes);
+        if (model.avatarPosition) renderAvatar(ctx, model.avatarPosition, this.currentSizes, model.avatarColor);
+
+        // render step tiles
+        ctx.lineWidth = this.currentSizes.stepBorder;
+        ctx.strokeStyle = 'black';
+        for (let tile of mapTiles) {
+            renderStep(ctx, tile, this.currentSizes);
+        }
     }
 
     resetCanvas (viewSize: number) {
@@ -122,7 +137,7 @@ function renderStep (
 ) {
     const { slot, stepMargin, step } = sizes;
     const [ x, y ] = realPosition(tile, sizes);
-    ctx.setTransform(1, 0, 0, 1, x - (slot / 2), y - (slot / 2));
+    ctx.setTransform(1, 0, 0, 1, x - Math.floor(slot / 2), y - Math.floor(slot / 2));
     ctx.strokeRect(stepMargin, stepMargin, step, step);
 }
 
@@ -130,12 +145,23 @@ function renderAvatar (
     ctx: CanvasRenderingContext2D,
     position: { x: number, y: number },
     sizes: BoardSizes,
+    fillColor: string,
 ) {
-    const { avatar } = sizes;
+    const { slot } = sizes;
     const [ x, y ] = realPosition(position, sizes);
-    ctx.fillStyle = 'orange';
-    ctx.setTransform(1, 0, 0, 1, x - (avatar / 2), y - (avatar / 2));
-    ctx.fillRect(0, 0, avatar, avatar);
+    const avatar = relativeSizes(avatarSizes, slot, avatarRelSize, false);
+    ctx.lineWidth = avatar.thick;
+    ctx.strokeStyle = 'black';
+    ctx.setTransform(1, 0, 0, 1, x + 0.5, y + 0.5);
+    ctx.beginPath();
+    ctx.ellipse(0, avatar.headY, avatar.headRadius, avatar.headRadius, 0, 0, 2 * Math.PI);
+    ctx.fillStyle = fillColor;
+    ctx.moveTo(avatar.path1x, avatar.pathTopY);
+    ctx.lineTo(avatar.path2x, avatar.pathBottomY);
+    ctx.lineTo(avatar.path3x, avatar.pathBottomY);
+    ctx.lineTo(avatar.path4x, avatar.pathTopY);
+    ctx.fill();
+    ctx.stroke();
 }
 
 function renderReward (
@@ -143,11 +169,18 @@ function renderReward (
     rewardItem: RewardItem,
     sizes: BoardSizes,
 ) {
-    const { avatar } = sizes;
+    const { step, stepMargin, slot } = sizes;
     const [ x, y ] = realPosition(rewardItem, sizes);
-    ctx.fillStyle = rewardItem.style.color;
-    ctx.setTransform(1, 0, 0, 1, x - (avatar / 2), y - (avatar / 2));
-    ctx.fillRect(0, 0, avatar, avatar);
+    ctx.fillStyle = rewardItem.color;
+    ctx.setTransform(1, 0, 0, 1, x, y );
+    const halfSlot = Math.floor(slot / 2);
+    ctx.fillRect(stepMargin - halfSlot, stepMargin - halfSlot, step, step);
+
+    const fontSize = Math.floor(slot * 0.8);
+    ctx.font = `bold ${fontSize}px sans`;
+    ctx.fillStyle = 'black';
+    const text = rewardItem.label;
+    ctx.fillText(text, - (ctx.measureText(text).width / 2), fontSize * 0.35);
 }
 
 function realPosition (
@@ -159,12 +192,26 @@ function realPosition (
     return [ x, y ];
 }
 
-function cent (realSize: number, realView: number): number {
-    return Math.ceil((realSize / 100) * realView);
+function relSize (value: number, fullSize: number, relativeSize: number): number {
+    return (value / relativeSize) * fullSize;
     // return (realSize / 100) * realView;
 }
 
-function mousePositionGet(view: View, e: MouseEvent): null | Position {
+function relativeSizes<S extends { [prop: string]: number }> (
+    sizes: S,
+    fullSize: number,
+    relativeSize: number = 100,
+    round: boolean = true,
+) {
+    sizes = {...sizes};
+    for (const prop of Object.keys(sizes)) {
+        const value = relSize(sizes[prop], fullSize, relativeSize);
+        (sizes as any)[prop] = round ? Math.round(value) : value;
+    }
+    return sizes;
+}
+
+function mousePositionGet (view: View, e: MouseEvent): null | Position {
     if (!view.currentModel || !view.currentSizes) return null;
 
     const slotSize = view.currentSizes.slot

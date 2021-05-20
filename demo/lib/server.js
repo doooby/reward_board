@@ -68,8 +68,8 @@ const PLAYER = {
 };
 
 const REWARDS = [
-    { x: 3, y: -3, style: { color: 'red' }, reward_id: 1, text: 'Nové profilové obrázky' },
-    { x: 6, y: -6, style: { color: 'red' }, reward_id: 2, text: 'Možnost vlastní profilové fotky' },
+    { x: 3, y: -3, color: 'red', label: '1', id: 1, text: 'Nové profilové obrázky' },
+    { x: 6, y: -6, color: 'red', label: 'TP', id: 2, text: 'Možnost vlastní profilové fotky' },
 ];
 
 const RIMS_LEVELS = 4;
