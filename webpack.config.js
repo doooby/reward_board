@@ -4,8 +4,9 @@ const Config = require('webpack-chain');
 
 const config = new Config();
 
-config.mode('production');
-// config.mode('development');
+const env = process.env.NODE_ENV === 'production' ? process.env.NODE_ENV : 'development';
+
+config.mode(env);
 // config.devtool('eval-cheap-module-source-map');
 
 config.resolve.extensions
@@ -19,8 +20,9 @@ config.module.rule('typescript')
 
 module.exports = config;
 
-config.entry('app').add('./src/index.tsx');
+config.entry('reward_board').add('./src/index.tsx');
 config.entry('demo').add('./demo/index.js');
+config.entry('demo_server_helpers').add('./demo/lib/server_helpers.js');
 config.output.path(path.resolve(__dirname, 'tmp/build'));
 
 module.exports = config.toConfig();

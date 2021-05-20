@@ -1,4 +1,6 @@
-import {BoardSizes, Model, mapTiles, RewardItem, Position} from './model';
+import {mapTiles} from './constants';
+import {BoardSizes, Model, RewardItem} from './model';
+import Position from './Position';
 import throttle from 'lodash.throttle';
 
 const STEP_SIZE = 2.3;

@@ -26,7 +26,12 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
         // aby se ignorovalo dalsi kliknuti nez se to vyhodnoti
         buttons.disableAll();
 
-        const result = await fetch(apiBaseUrl + '/move', { data: position });
+        const reward = board.rewardOnPositionGet(position);
+        const result = await fetch(apiBaseUrl + '/move', { data: {
+                position: position.toCoords(),
+                reward_id: reward?.id,
+            },
+        });
         if (result === null || !result.valid) {
             // tah neni validni nebo neco selhalo v komunikaci se serverem
             // zobrazit nejakou informaci uzivateli?
@@ -34,11 +39,29 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
         }
         // nastavit novou pozici na desce
         board.setPosition(position);
+
+        // protoze je tah validni, tak server souhlasil s odmenou, na kterou uzivatel stoupnul
+        if (reward) {
+            // aktualizovat odmeny - mohla nektera zmizet
+            const rewards = await fetch(apiBaseUrl + '/rewards', { method: 'GET' });
+            if (rewards === null) throw new Error('rewards fetch failed');
+            board.setRewards(rewards);
+
+            // co s tim? dalsi modal uzivateli?
+            // takzer napr:
+            // 1. stahnout si ze serveru obsah modalu pro danou odmenu
+            // 2. vykreslit tento modal
+        }
+
         // aktualizovat vypis poctu zvybajicich tahu?
         // aktualizuje tlacitka (disabled nemozne pohyby)
         if (result.moves > 0) buttons.update(board);
+
         // aktualizace pocitadla tahu
         document.querySelector('#rewards-moves-left').textContent = result.moves;
+
+        // zobrazeni zmeny teleportu
+        showTPBadge(result.teleport_active);
     }
 
     // udalost pri kliku na pozici
@@ -74,6 +97,12 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
         }
     }
 
+    function showTPBadge (state) {
+        const badge = document.querySelector('#rewards-tp-badge');
+        if (state) badge.classList.remove('invisible');
+        else badge.classList.add('invisible');
+    }
+
     // inicializace UI
     const buttons = Board.findButtons(direction => document.getElementById(`rewards-btn-${direction}`));
     const board = new Board({
@@ -87,6 +116,7 @@ window.D3O_RewardBoard(async ({Board, fetch, Template}) => {
     });
     buttons.onClick = direction => board.step(direction);
     if (defaultPlayerData.moves > 0) buttons.update(board);
+    showTPBadge(defaultPlayerData.teleport_active);
 
     window.D3O_REWARDS_BOARD = board;
 });

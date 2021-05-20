@@ -1,4 +1,4 @@
-import { Position } from './model';
+import Position from './Position';
 
 describe('validate position', () => {
 

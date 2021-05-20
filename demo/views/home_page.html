@@ -28,7 +28,9 @@
         </div>
         <div class="p-2" style="flex-basis: 300px;">
             <div class="mb-3 alert alert-secondary">
-                Moves left: <strong id="rewards-moves-left">{{moves_left}}</strong>
+                Moves left:
+                <strong id="rewards-moves-left">{{moves_left}}</strong>
+                <div id="rewards-tp-badge" class="badge badge-notice invisible" title="Telportační mód: neodečítají se tahy">TP</div>
             </div>
             <div class="mb-3">
                 <button class="btn btn-danger" id="reset-btn">
@@ -70,7 +72,7 @@
 </div>
 
 
-<script src="/assets/app.js"></script>
+<script src="/assets/reward_board.js"></script>
 <script src="/assets/demo.js"></script>
 <script>
     // reset button
