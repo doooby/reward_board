@@ -60,6 +60,7 @@ app.post('/move', (req, res) => {
 app.post('/reset', (req, res) => {
     PLAYER.moves = 100;
     PLAYER.position = new Position(0, 0);
+    resetREWARDS();
     res.json(true);
 });
 
@@ -82,11 +83,16 @@ const PLAYER = {
     teleport_mode: false,
 };
 
-const REWARDS = [
-    { x: 3, y: -3, color: 'red', label: '1', id: 1, text: 'Nové profilové obrázky' },
-    { x: 6, y: -6, color: 'red', label: 'F', id: 2, text: 'Možnost vlastní profilové fotky' },
-    { x: 0, y: 1, color: 'blue', label: 'TP', id: 3, text: 'Teleportační mód', teleport: true },
-];
+let REWARDS = null;
+
+function resetREWARDS () {
+    REWARDS = [
+        { x: 3, y: -3, color: 'red', label: '1', id: 1, text: 'Nové profilové obrázky' },
+        { x: 6, y: -6, color: 'red', label: 'F', id: 2, text: 'Možnost vlastní profilové fotky' },
+        { x: 0, y: 1, color: 'blue', label: 'TP', id: 3, text: 'Teleportační mód', teleport: true },
+    ];
+}
+resetREWARDS();
 
 function findReward (reward_id, position) {
     if (!reward_id) return null;
