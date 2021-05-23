@@ -2,7 +2,9 @@
 https://calm-dusk-14278.herokuapp.com/
 
 # HOW TO
-see demo/index.js
+* see `demo/index.js` on how to integrate into frontend
+* see `demo/lib/server.js` on how the expected endpoints looks like
+* see `src/Position.ts` - `Position.isOnBoard` is the validation function for moves (see `/move` endpoint)
 
 config:
 ```
@@ -10,6 +12,7 @@ type Config = {
     element: HTMLElement;
     defaultPosition?: { x: number, y: number };
     rewards: RewardItem[];
+    avatarColor?: string;
     onStepRequested?: (position: Position) => void;
     onPositionClick?: (position: Position) => void;
     onMouseOverPosition?: (position?: Position) => void;
@@ -17,6 +20,9 @@ type Config = {
 ```
 
 # DEVELOPMENT
-`` yarn install
-`` yarn webpack --watch
-`yarn demo:serve`# this runs on default: `http://localhost:3000`
+* yarn install
+* yarn webpack --watch
+* yarn demo:serve # this runs on default: `http://localhost:3000`
+
+# BUILD RELEASE VERSION
+* yarn build:production # tmp/build/reward_board.js
