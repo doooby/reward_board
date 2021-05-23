@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
+require('../../tmp/build/demo_server_helpers.js');
 
 app.set('views', path.resolve(__dirname, '../views'));
 app.set('view engine', 'html');
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
     res.render('home_page.html', {
         rewards: REWARDS,
         moves_left: PLAYER.moves,
+        teleport_active: PLAYER.teleport_mode,
     });
 });
 
@@ -26,17 +28,29 @@ app.get('/player', (req, res) => {
 });
 
 app.post('/move', (req, res) => {
-    const newPosition = req.body;
-    if (
-        PLAYER.moves > 0 &&
-        distance(PLAYER.position, newPosition) === 1 &&
-        isOnBoard(newPosition)
-    ) {
+    const newPosition = new Position(req.body.position.x, req.body.position.y);
+    const validMove = PLAYER.moves > 0 &&
+        PLAYER.position.distance(newPosition) === 1 &&
+        newPosition.isOnBoard();
+    const reward = findReward(req.body.reward_id, newPosition);
+    const validReward = req.body.reward_id ? !!reward : true;
+    if (validMove && validReward) {
         PLAYER.position = newPosition;
-        PLAYER.moves -= 1;
+        if (!PLAYER.teleport_mode) PLAYER.moves -= 1;
+
+        // vyhodnoti naslapnutou odmenu
+        if (reward) {
+            PLAYER.teleport_mode = !!reward.teleport;
+            if (reward.teleport) {
+                const index = REWARDS.indexOf(reward);
+                REWARDS.splice(index, 1);
+            }
+        }
+
         res.json({
             valid: true,
             moves: PLAYER.moves,
+            teleport_active: PLAYER.teleport_mode,
         });
     } else {
         res.json({ valid: false });
@@ -45,7 +59,7 @@ app.post('/move', (req, res) => {
 
 app.post('/reset', (req, res) => {
     PLAYER.moves = 100;
-    PLAYER.position = { x: 0, y: 0 };
+    PLAYER.position = new Position(0, 0);
     res.json(true);
 });
 
@@ -59,49 +73,24 @@ app.get('/assets/*', (req, res) => {
 });
 
 app.listen(port, () => {
-   console.log(`started on http://localhost:${port}`);
+    console.log(`started on http://localhost:${port}`);
 });
 
 const PLAYER = {
     moves: 100,
-    position: { x: 0, y: 0 },
+    position: new Position(0, 0),
+    teleport_mode: false,
 };
 
 const REWARDS = [
-    { x: 3, y: -3, style: { color: 'red' }, reward_id: 1, text: 'Nové profilové obrázky' },
-    { x: 6, y: -6, style: { color: 'red' }, reward_id: 2, text: 'Možnost vlastní profilové fotky' },
+    { x: 3, y: -3, color: 'red', label: '1', id: 1, text: 'Nové profilové obrázky' },
+    { x: 6, y: -6, color: 'red', label: 'F', id: 2, text: 'Možnost vlastní profilové fotky' },
+    { x: 0, y: 1, color: 'blue', label: 'TP', id: 3, text: 'Teleportační mód', teleport: true },
 ];
 
-const RIMS_LEVELS = 4;
-const RIM_STEPS = 3;
-const RIM_LAS_LEVEL_STEPS = 8;
-
-function distance (pos1, pos2) {
-    return Math.abs( pos1.x - pos2.x ) + Math.abs( pos1.y - pos2.y );
-}
-
-function isOnBoard (pos) {
-    const xIsZero = pos.x === 0;
-    const yIsZero = pos.y === 0;
-    if (xIsZero && yIsZero) return true;
-
-    const x = Math.abs(pos.x);
-    const y = Math.abs(pos.y);
-
-    if (xIsZero || yIsZero) {
-        const step = xIsZero ? y : x;
-        const limit = ( RIMS_LEVELS * RIM_STEPS ) - RIM_STEPS + RIM_LAS_LEVEL_STEPS;
-        return step <= limit;
-    }
-
-    if (x % RIM_STEPS === 0 || y % RIM_STEPS === 0) {
-        const [ a, b ] = [ x, y ].sort((n1, n2) => n1 - n2);
-        const bIsOnRim = b % RIM_STEPS === 0;
-        const rim = bIsOnRim ? (b / RIM_STEPS) : (a / RIM_STEPS);
-        if (rim > RIMS_LEVELS) return false;
-        const sidestep = bIsOnRim ? a : b;
-        return sidestep <= (rim * RIM_STEPS);
-    }
-
-    return false;
+function findReward (reward_id, position) {
+    if (!reward_id) return null;
+    const reward = REWARDS.find(item => item.id === reward_id);
+    if (reward && reward.x === position.x && reward.y === position.y) return reward;
+    return null;
 }

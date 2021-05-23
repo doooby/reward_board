@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "demo:serve": "node demo/lib/server.js",
+    "build:production": "NODE_ENV=production webpack"
     "start": "node demo/lib/server.js"
   },
   "dependencies": {
