@@ -1,4 +1,5 @@
 import Board from './Board';
+import Position from './Position';
 import { fetch } from './fetch';
 import Template from './Template';
 
@@ -6,7 +7,7 @@ import Template from './Template';
     wrapper: (...args: unknown[]) => void
 ) {
     try {
-        wrapper({ Board, fetch, Template });
+        wrapper({ Board, fetch, Template, Position });
     } catch (error) {
         console.error('D3O_RewardBoard failed', error);
     }
